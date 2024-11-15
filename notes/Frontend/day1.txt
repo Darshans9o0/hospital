@@ -1,0 +1,35 @@
+first : create a vite app 
+add tailwind 
+add new npm axios react router - dom react-toastify 
+added asssests / images nd expoeted in asssests.js 
+created folders 1 componets 2 pages 3 context 
+added pages in pages : 
+about 
+contact
+docter 
+home 
+myProfile
+myAppointment
+login
+
+next : adding components to navbar 
+creating a navbar 
+click 
+onst [isOpen, setIsOpen] = useState(false);
+
+return (
+  <div className="flex items-center gap-2 cursor-pointer relative" onClick={() => setIsOpen(!isOpen)}>
+    <img className="w-8 rounded-full" src={assets.profile_pic} alt="Profile" />
+    <img className="w-2.5" src={assets.dropdown_icon} alt="Dropdown Icon" />
+
+    {isOpen && (
+      <div className="absolute top-0 right-0 pt-14 text-base font-medium text-gray-700 z-20">
+        <div className="bg-gray-100 rounded-2xl flex flex-col p-3">
+          <p className="hover:bg-gray-200 p-2 rounded-md cursor-pointer">MY PROFILE</p>
+          <p className="hover:bg-gray-200 p-2 rounded-md cursor-pointer">MY APPOINTMENT</p>
+          <p className="hover:bg-gray-200 p-2 rounded-md cursor-pointer">LOGOUT</p>
+        </div>
+      </div>
+    )}
+  </div>
+);
