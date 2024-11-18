@@ -33,3 +33,52 @@ return (
     )}
   </div>
 );
+ const getAvaliableSlot = async () => {
+    setDocInfo([])
+    // getting current date
+    let today = new Date()
+    for(let i = 0; i<7;i++){
+      // getting date with indx 
+      let curentDate = new Date(today)
+      curentDate.setDate(today.getDate()+i)
+
+      // setting end time with date
+
+      let endTime = new Date()
+      endTime.setDate(today.getDate()+i)
+      endTime.setHours(21 , 0 , 0 ,0)
+
+      // setting hours
+      if(today.getDate() === curentDate.getDate()){
+        curentDate.setDate(curentDate.getHours()  > 10 ? curentDate.getHours() + 1 : 10)
+        curentDate.setMinutes(curentDate.getMinutes() > 30 ? 30 : 0)
+      } else {
+        curentDate.setHours(10)
+        curentDate.setMinutes(0)
+      }
+
+      let timeSlot = []
+      while(curentDate < endTime){
+         let formattedTime = curentDate. toLocaleTimeString([] , { hour  : "2-digit", minute : "2-digit"})
+         // add slot to array 
+         timeSlot.push({
+          datetime : new Date(curentDate),
+          time : formattedTime
+         })
+        
+
+         // increment time by 30 
+         curentDate.setMinutes(curentDate.getMinutes() + 30)
+        }
+
+         setDocSlot (prev  => ([...prev , timeSlot]))
+   
+    }
+  }
+  
+  useEffect(()=>{
+    console.log(docSlot);
+  } , [docSlot])
+
+
+  2.54 time
