@@ -1,6 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState   } from 'react';
+import { AppContext } from '../context/AppContext';
+import axios from"axios"
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+const {backendUrl , token , setToken} = useContext(AppContext)
+const navigate = useNavigate()
   const [state, setState] = useState('Sign UP');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,8 +18,38 @@ const Login = () => {
     event.preventDefault();
     setMessage('');
 
+    try {
+      if (state === 'Sign UP') {
+        const {data} = await axios.post(`${backendUrl}/api/user/register`, {name , password , email})
+        if(data.success){
+          localStorage.setItem('token'  , data.token)
+          setToken(data.token)
+        } else {
+          toast.error(data.message)
+        }
+      } else {
+        const {data} = await axios.post(`${backendUrl}/api/user/login`, {password , email})
+        if(data.success){
+          localStorage.setItem('token'  , data.token)
+          setToken(data.token)
+        } else {
+          toast.error(data.message)
+        }
+      }
+    } catch (error) {
+      toast.error(error.message)
+      
+    }
+
     // Determine the endpoint based on the state (Sign UP or Login)
   }
+  useEffect( () => {
+    if(token) {
+      navigate('/')
+
+    }
+
+  },[token])
 
   return (
     <form onSubmit={onSubmitHandler} className="min-h-[80vh] flex items-center justify-center bg-gray-50 p-6">
@@ -67,6 +103,7 @@ const Login = () => {
         {/* Button */}
         <button
           type="submit"
+          
           className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200"
         >
           {state === 'Sign UP' ? 'Create Account' : 'Login'}

@@ -21,7 +21,7 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+*.sw? *assests?
 assets/
 # Logs
 logs/
@@ -69,3 +69,4 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
