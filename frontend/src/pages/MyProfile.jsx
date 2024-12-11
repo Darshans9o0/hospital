@@ -30,7 +30,6 @@ const Profile = () => {
   const updateUserDetails = async () => {
     try {
       const formData = new FormData()
-console.log("===>",userData.addres)
       formData.append('name' , userData.name)
       formData.append('phone' , userData.phone)
       formData.append('addres' ,JSON.stringify( userData.addres))

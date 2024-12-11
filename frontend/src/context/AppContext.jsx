@@ -17,7 +17,7 @@ const AppContextProvider = (props) => {
       const { data } = await axios.get(backendUrl + "/api/doctor/list");
       if (data.success) {
         setDoctor(data.doctors);
-        console.log("doctors", data.doctors);
+        //console.log("doctors", data.doctors);
       } else {
         toast.error(data.message);
       }
@@ -60,7 +60,7 @@ const AppContextProvider = (props) => {
   }, [token]);
 
   const value = {
-    doctors,
+    doctors,getDoctorData,
     currencySymbol,
     token,
     setToken,
