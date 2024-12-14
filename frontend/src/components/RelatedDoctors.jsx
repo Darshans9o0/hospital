@@ -3,7 +3,7 @@ import { AppContext } from '../context/AppContext'
 import { useNavigate } from 'react-router-dom'
 
 const RelatedDoctors = ({ speciality, docID }) => {
-  console.log(docID);
+ // console.log(docID);
 
   const { doctors } = useContext(AppContext)
   const [relDoc, setRelDoc] = useState([])

@@ -2,8 +2,9 @@ import validator from "validator";
 import bcrypt from "bcryptjs";
 import UserModel from "../models/user.model.js";
 import jwt from "jsonwebtoken";
-import {v2 as cloudinary} from "cloudinary"
-import doctor from "../models/doctor.model.js"
+import { v2 as cloudinary } from "cloudinary";
+import doctor from "../models/doctor.model.js";
+import appointmentModel from "../models/appointment.model.js";
 // api to rgister user
 const registerUser = async (req, res) => {
   try {
@@ -90,15 +91,16 @@ const updateProfile = async (req, res) => {
       dob,
       gender,
     });
-    if(imageFile) {
-      // upload image to cloudinary 
-      const imageUpload = await cloudinary.uploader.upload(imageFile.path , {resource_type : "image"})
-      const imageUrl = imageUpload.secure_url
+    if (imageFile) {
+      // upload image to cloudinary
+      const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+        resource_type: "image",
+      });
+      const imageUrl = imageUpload.secure_url;
 
-      await UserModel.findByIdAndUpdate(userId ,{image : imageUrl})
-
+      await UserModel.findByIdAndUpdate(userId, { image: imageUrl });
     }
-    res.json({success : true , message :"profile updated"})
+    res.json({ success: true, message: "profile updated" });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: "error message " });
@@ -106,58 +108,113 @@ const updateProfile = async (req, res) => {
 };
 
 // api to book appointment ]
-const bookAppointment = async (req, res) =>  {
-
+const bookAppointment = async (req, res) => {
   try {
-    const {userId , slotDate , slotTime , docID} = req.body
+    const { userId, docId, slotDate, slotTime } = req.body;
+    const docData = await doctor.findById(docId).select(["-password"]);
 
-    const docData = await doctor.findById(docID).select('-password')
-
-    if(!docData.available) {
-      return res.json({success : false , message : "Doctor  not   Available"})
+    if (!docData.available) {
+      return res.json({ success: false, message: "Doctor not available" });
     }
-    let slots_booked = docData.slots_booked
-
-    // checking for slots availibilty 
-    if (slots_booked[slotDate]) {
-      if (slots_booked[slotDate].includes(slotTime)) {
-        return res.json({success : false , message : " slot  not   Available"})
+    // check if slot is available
+    const slotsBooked = docData.slots_booked;
+    if (slotsBooked[slotDate]) {
+      if (slotsBooked[slotDate].includes(slotTime)) {
+        return res.json({ success: false, message: "Slot already booked" });
       } else {
-        slots_booked[slotDate].push(slotTime)
+        slotsBooked[slotDate].push(slotTime);
       }
     } else {
-      slots_booked[slotDate] = []
-      slots_booked[slotDate].push(slotTime)
+      // no slots booked for that date
+      slotsBooked[slotDate] = [];
+      slotsBooked[slotDate].push(slotTime);
     }
-    const userData =  await UserModel.findById(userId).select('-password')
-    delete docData.data.slots_booked
+
+    const userData = await UserModel.findById(userId).select(["-password"]);
+    // do not save doctor's appointment history
+    delete docData.slots_booked;
+
     const appointmentData = {
-      userId ,
-      docID ,
-      userData ,
-      docData ,
-      ammount : docData.fees,
-      slotTime ,
-      slotDate ,
-      date : Date.now()
-    }    
-   const newAppointment = new appointmentModel(appointmentData)
-   await newAppointment.save()
-  
+      userId,
+      docId,
+      slotDate,
+      slotTime,
+      userData,
+      docData,
+      ammount: docData.fees,
+      data: Date.now(),
+    };
 
-   // save new slots data in db 
-   await doctor.findByIdAndUpdate(docID, {slots_booked})
+    const newAppointment = new appointmentModel(appointmentData);
+    await newAppointment.save();
 
-   res.json({success : true , message : "appointment booked"})
+    // save new slots data in doctor data
+    await doctor.findByIdAndUpdate(docId, {
+      slots_booked: slotsBooked,
+    });
 
+    return res.json({
+      success: true,
+      message: "Appoinment booked successfully",
+    });
   } catch (error) {
     console.log(error);
-    res.json({ success: false, message: "error message " });
-    
+    return res.json({ success: false, message: error.message });
   }
+};
+// api to get user appoiments for frontend my-appointment page
 
-}
+const listAppointemt = async (req, res) => {
+  try {
+    const { userId } = req.body;
 
+    // adding apotmet s
+    const appointments = await appointmentModel.find({ userId });
+    res.json({ success: true, data: appointments });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+// api to delete apointment
+const deleteAppointment = async (req, res) => {
+  try {
+    const { userId, appointmentId } = req.body;
+    const appointmentData = await appointmentModel.findById(appointmentId);
+    // verfiy appointment user
+    if (appointmentData.userId !== userId) {
+      return res.json({ success: false, message: "unthorized logged in " });
+    }
+    await appointmentModel.findByIdAndUpdate(appointmentId, {
+      cancelled: true,
+    });
+    // realsing docter slot
 
+    const { docId, slotDate, slotTime } = appointmentData;
 
-export { registerUser, loginUser, getProfileData , updateProfile , bookAppointment };
+    const doctorData = await doctor.findById(docId);
+
+    let slots_booked = doctorData.slots_booked;
+
+    slots_booked[slotDate] = slots_booked[slotDate].filter(
+      (e) => e !== slotTime
+    );
+
+    await doctor.findByIdAndUpdate(docId, { slots_booked });
+
+    res.json({ success: true, message: "Appointment message" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export {
+  registerUser,
+  loginUser,
+  getProfileData,
+  updateProfile,
+  bookAppointment,
+  listAppointemt,
+  deleteAppointment,
+};
