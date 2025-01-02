@@ -92,7 +92,7 @@ const addDoctor = async (req, res) => {
     await newDoctor.save();
     res.json({ success: true, message: "doctor data " });
   } catch (error) {
-    console.log(error  , "in sa");
+    console.log(error  , "Doctor");
     res.json({ success: false, message: "error message " });
   }
 };

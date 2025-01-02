@@ -14,11 +14,11 @@ const navigate = useNavigate()
   const [message, setMessage] = useState('');
 
   useEffect( () => {
-    if(token) {console.log("going to /")
+    if(token) {
       navigate('/')
     }
 
-  },[dToken])
+  },[token])
 
   // Handle form submission
   const onSubmitHandler = async (event) => {

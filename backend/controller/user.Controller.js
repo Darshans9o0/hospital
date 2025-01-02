@@ -42,12 +42,12 @@ const registerUser = async (req, res) => {
 };
 // api for user login
 const loginUser = async (req, res) => {
-  console.log("Request Body:", req.body);
+  //console.log("Request Body:", req.body);
   try {
     const { email, password } = req.body;
 
     const user = await UserModel.findOne({ email });
-    console.log(req.body);
+    //console.log(req.body);
     if (!user) {
       return res.json({ success: false, message: "user doesn't exist" });
     }

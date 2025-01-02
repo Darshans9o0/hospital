@@ -21,14 +21,14 @@ const MyAppointemnt = () => {
       const { data } = await axios.get(backendUrl + '/api/user/appointments', {
         headers: { token }
       });
-      console.log(data.data)
+  //    console.log(data.data)
       
       if (data.success) {     
         setAppointments(data.data.reverse());
-        console.log("API Response:", data.appointments); 
+        //console.log("API Response:", data.appointments); 
 
        
-        console.log("appoitment" , data.appointments);       
+      //  console.log("appoitment" , data.appointments);       
       }
     } catch (error) {
       console.log(error);
