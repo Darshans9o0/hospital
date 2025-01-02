@@ -4,7 +4,7 @@ import jwt from"jsonwebtoken"
 const authAdmin = async (req ,res , next) => {
     try { 
         const {atoken}= req.headers 
-        console.log(atoken)
+      //  console.log(atoken)
         if(!atoken) {
             return res.json({ success : false , message : "Not authorised login agaian"})
         }
@@ -19,4 +19,4 @@ const authAdmin = async (req ,res , next) => {
         
     }
 }
-export default authAdmin
+export default authAdmin 

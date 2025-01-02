@@ -7,9 +7,9 @@ const DocterList = () => {
  
   useEffect( () => {
    if (aToken) {
-      console.log('useEffect triggered');
+    //  console.log('useEffect triggered');
       getAllDoctors()
-     console.log("Doct",doctors)
+    // console.log("Doct",doctors)
    }
 
   },[aToken,])

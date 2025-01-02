@@ -98,13 +98,14 @@ const MyAppointemnt = () => {
 
           {/* Action Buttons - Vertical Alignment */}
           <div className="flex flex-col items-end gap-3 lg:ml-auto">
-          {!item.cancelled  &&<button className="bg-blue-500 text-white py-1.5 px-3 rounded-md hover:bg-blue-600 transition text-sm">
+          {!item.cancelled  && item.payment && !item.isCompleted &&<button className="bg-blue-500 text-white py-1.5 px-3 rounded-md hover:bg-blue-600 transition text-sm">
               Pay Online
             </button> }
-           {!item.cancelled  && <button onClick={()=> cancelAppointment(item._id)} className="bg-red-500 text-white py-1.5 px-3 rounded-md hover:bg-red-600 transition text-sm">
+           {!item.cancelled  &&  !item.isCompleted && <button onClick={()=> cancelAppointment(item._id)} className="bg-red-500 text-white py-1.5 px-3 rounded-md hover:bg-red-600 transition text-sm">
               Cancel Appointment
             </button>} 
-            {item.cancelled &&   <button  className="sm:min-w-48 py-2 border-red-700 rounded font-extrabold text-red-500 mt-20"> Appointemnt Cancelled  </button>}
+            {item.cancelled && !item.isCompleted&&   <button  className="sm:min-w-48 py-2 border-red-700 rounded font-extrabold text-red-500 mt-20"> Appointemnt Cancelled  </button>}
+            {item.isCompleted && <button className="sm:min-w-48 py-2 border border-green-500 text-green-600">Completed</button>}
           </div>
         </div>
       ))}

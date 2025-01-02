@@ -13,6 +13,13 @@ const navigate = useNavigate()
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
 
+  useEffect( () => {
+    if(token) {console.log("going to /")
+      navigate('/')
+    }
+
+  },[dToken])
+
   // Handle form submission
   const onSubmitHandler = async (event) => {
     event.preventDefault();
@@ -43,13 +50,8 @@ const navigate = useNavigate()
 
     // Determine the endpoint based on the state (Sign UP or Login)
   }
-  useEffect( () => {
-    if(token) {
-      navigate('/')
 
-    }
 
-  },[token])
 
   return (
     <form onSubmit={onSubmitHandler} className="min-h-[80vh] flex items-center justify-center bg-gray-50 p-6">
