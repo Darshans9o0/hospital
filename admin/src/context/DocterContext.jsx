@@ -96,7 +96,7 @@ const DocterContextProvider = (props) => {
       });
       if (data.success) {
         setProfile(data.profileData);
-        console.log(data.profileData);
+       // console.log(data.profileData);
         
         
         
