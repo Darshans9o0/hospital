@@ -87,7 +87,7 @@ const addDoctor = async (req, res) => {
     console.log("saving doctor data",doctorData)
     console.log("addres" ,  addres1);
    // console.log(doctorData);
-    const newDoctor = new Doctor(doctorData);
+    const newDoctor = new doctor(doctorData);
     await newDoctor.save();
     res.json({ success: true, message: "doctor data " });
   } catch (error) {
@@ -116,7 +116,7 @@ const loginAdmin = async(req , res) => {
 // api to get all docters list to dashboard
 const allDocterList = async(req , res) => {
    try {
-    const doctors = await  Doctor.find({}).select('-password')
+    const doctors = await  doctor.find({}).select('-password')
     res.json({success : true , doctors})
    } catch (error) {
     console.log(error);
