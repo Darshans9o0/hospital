@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { doctors } from "../assets/assets";
 
 const Profile = () => {
   // User data state

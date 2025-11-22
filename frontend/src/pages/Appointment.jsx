@@ -5,12 +5,14 @@ import { assets } from '../assets/assets';
 import RelatedDoctors from'../components/RelatedDoctors';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { doctors } from "../assets/assets";
 
 const Appointment = () => {
   const { docId } = useParams();
   const navigate = useNavigate();
-  const { doctors, currencySymbol, backendUrl, getDoctorData, token } =
-    useContext(AppContext);
+ // const { doctors, currencySymbol, backendUrl, getDoctorData, token } =
+   // useContext(AppContext);
+   const { currencySymbol, token } = useContext(AppContext);
   const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
   const [docInfo, setDocInfo] = useState(null);
@@ -18,10 +20,14 @@ const Appointment = () => {
   const [slotIndex, setSlotIndex] = useState(0);
   const [slotTime, setSlotTime] = useState("");
 
-  const fetchDocInfo = async () => {
-    const doc = doctors.find((doc) => doc._id === docId);
-    setDocInfo(doc);
-  };
+  // const fetchDocInfo = async () => {
+  //   const doc = doctors.find((doc) => doc._id === docId);
+  //   setDocInfo(doc);
+  // };
+  const fetchDocInfo = () => {
+  const doc = doctors.find((d) => d._id == docId); // use assets doctors
+  setDocInfo(doc);
+};
 
   const getAvailableSlots = async () => { 
     setDocSlots([]);
@@ -117,7 +123,7 @@ const Appointment = () => {
       
         console.log("Appointment Booked");
         toast.success(data.message);
-        getDoctorData();
+       // getDoctorData();
         navigate("/my-appointment");
       } else {
         console.log("slot not booked", data.message);

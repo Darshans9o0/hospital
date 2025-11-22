@@ -1,11 +1,11 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
-
+import { doctors } from "../assets/assets";
 const Docter = () => {
   const { speciality } = useParams();
   const navigate = useNavigate();
-  const { doctors } = useContext(AppContext);
+//  const { doctors } = useContext(AppContext);
   const [filterDoc, setFilterDoc] = useState([]);
 
   const applyFilter = () => {
@@ -31,9 +31,9 @@ const Docter = () => {
           <p
             onClick={() =>
               navigate (            
-                    speciality === "GENRAL PHYSICIAN"
+                    speciality === "General physician"
                 ? "/doctors"
-                : "/doctors/GENRAL PHYSICIAN"
+                : "/doctors/General physician"
               )
             }
             className="w-[94vw] sm:w-auto pl-3 py-1.5 border border-gray-300 rounded-xl transition-all cursor-pointer"

@@ -2,33 +2,44 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { doctors } from "../assets/assets";
 
-const MyAppointemnt = () => {
-  const { backendUrl , token , getDoctorData  } = useContext(AppContext);
+const MyAppointments = () => {
+  const { backendUrl, token, getDoctorsData } = useContext(AppContext);
 
-  // state variable to store data
-  const [appointments , setAppointments] = useState([]);
+  const [appointments, setAppointments] = useState([]);
+  const months = [
+    "",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
 
-  // to display time datae month properly
-  const months = [ "" , "JAN" , "FEB" , "MAR" , "APRIL" , "MAY" , "JUNE" , "JULY" , "AUG" , "SEP" , "OCT" , "NOV" , "DEC"]
-  
   const slotDateFormat = (slotDate) => {
-    const dateArray = slotDate.split('_')
-    return dateArray[0] + '' + months[Number(dateArray[1])] + " " + dateArray[2]
-  }
-  const getUserAppointment = async () => { 
-    try {
-      const { data } = await axios.get(backendUrl + '/api/user/appointments', {
-        headers: { token }
-      });
-  //    console.log(data.data)
-      
-      if (data.success) {     
-        setAppointments(data.data.reverse());
-        //console.log("API Response:", data.appointments); 
+    const dateArray = slotDate.split("_");
+    return (
+      dateArray[0] + " " + months[Number(dateArray[1])] + " " + dateArray[2]
+    );
+  };
 
-       
-      //  console.log("appoitment" , data.appointments);       
+  const getUserAppointments = async () => {
+    try {
+      const { data } = await axios.get(backendUrl + "/api/user/appointments", {
+        headers: { token },
+      });
+
+      if (data.success) {
+        setAppointments(data.appointments.reverse());
+        console.log(data.appointments);
       }
     } catch (error) {
       console.log(error);
@@ -36,81 +47,96 @@ const MyAppointemnt = () => {
     }
   };
 
-  const cancelAppointment = async(appointmentId) => {
+  const cancelAppointment = async (appointmentId) => {
     try {
-     const { data } = await axios.post(backendUrl + '/api/user/cancel-appointment' , {appointmentId} ,  {headers : {token}})
-
-     if(data.success){
-      toast.success(data.message)
-      getUserAppointment()
-      getDoctorData()
-     } else {
-      toast.error(data.message)
-     }
-      
+      const { data } = await axios.post(
+        backendUrl + "/api/user/cancel-appointment",
+        { appointmentId },
+        { headers: { token } }
+      );
+      if (data.success) {
+        toast.success(data.message);
+        getUserAppointments();
+        getDoctorsData();
+      } else {
+        toast.error(data.message);
+      }
     } catch (error) {
       console.log(error);
-      toast.error(error.message)
-      
+      toast.error(error.message);
     }
-  }
+  };
 
   useEffect(() => {
     if (token) {
-      getUserAppointment()
-      
+      getUserAppointments();
     }
-
-  },[token])
+  }, [token]);
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h2 className="text-2xl font-bold mb-6">My Appointments</h2>
-
-      {appointments.slice(0, 4).map((item, index) => (
-        <div
-          key={index}
-          className="flex flex-col lg:flex-row items-start justify-between bg-white border border-gray-300 shadow-lg rounded-lg p-4 mb-6"
-        >
-          {/* Doctor's Image */}
-          <div className="w-full lg:w-1/4 mb-4 lg:mb-0">
-            <img
-              src={item.docData.image}
-              alt={item.docData.name}
-              className="w-full h-36 object-cover rounded-md"
-            />
-          </div>
-
-          {/* Doctor's Info */}
-          <div className="flex-1 lg:mx-6">
-            <h3 className="text-xl font-semibold">{item.docData.name}</h3>
-            <p className="text-gray-600">{item.docData.speciality}</p>
-            <div className="mt-4">
-              <p className="font-medium">Address:</p>
-              <p>{item.docData.addres1.line1 || 'na'}</p>
-              <p>{item.docData.addres1.line2 || 'na'}</p>
-              <p className="mt-4">
-                <span className="font-medium">Date & Time:</span>   {slotDateFormat(item.slotDate)} | {item.slotTime}
-                
+    <div>
+      <p className="pb-3 mt-12 font-medium text-zinc-700 border-b">
+        My appointments
+      </p>
+      <div>
+        {appointments.map((item, index) => (
+          <div
+            className="grid grid-cols-[1fr_2fr] gap-4 sm:flex sm:gap-6 py-2 border-b"
+            key={index}
+          >
+            <div>
+              <img
+                className="w-32 bg-indigo-50"
+                src={item.docData.image}
+                alt=""
+              />
+            </div>
+            <div className="flex-1 text-sm text-zinc-600">
+              <p className="text-neutral-800 font-semibold">
+                {item.docData.name}
+              </p>
+              <p>{item.docData.speciality}</p>
+              <p className="text-zinc-700 font-medium mt-1">Address:</p>
+              <p className="text-xs">{item.docData.address.line1}</p>
+              <p className="text-xs">{item.docData.address.line2}</p>
+              <p className="text-xs mt-1">
+                <span className="text-sm text-neutral-700 font-medium">
+                  Date & Time:
+                </span>{" "}
+                {slotDateFormat(item.slotDate)} | {item.slotTime}
               </p>
             </div>
+            <div></div>
+            <div className="flex flex-col gap-2 justify-end">
+              {!item.cancelled && !item.isCompleted && (
+                <button className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-primary hover:text-white transition-all duration-300">
+                  Pay Online
+                </button>
+              )}
+              {!item.cancelled && !item.isCompleted && (
+                <button
+                  onClick={() => cancelAppointment(item._id)}
+                  className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300"
+                >
+                  Cancel appointment
+                </button>
+              )}
+              {item.cancelled && !item.isCompleted && (
+                <button className="sm:min-w-48 py-2 border border-red-500 rounded text-red-500">
+                  Appointment cancelled
+                </button>
+              )}
+              {item.isCompleted && (
+                <button className="sm:min-w-48 py-2 border border-green-500 rounded text-green-500">
+                  Completed
+                </button>
+              )}
+            </div>
           </div>
-
-          {/* Action Buttons - Vertical Alignment */}
-          <div className="flex flex-col items-end gap-3 lg:ml-auto">
-          {!item.cancelled  && item.payment && !item.isCompleted &&<button className="bg-blue-500 text-white py-1.5 px-3 rounded-md hover:bg-blue-600 transition text-sm">
-              Pay Online
-            </button> }
-           {!item.cancelled  &&  !item.isCompleted && <button onClick={()=> cancelAppointment(item._id)} className="bg-red-500 text-white py-1.5 px-3 rounded-md hover:bg-red-600 transition text-sm">
-              Cancel Appointment
-            </button>} 
-            {item.cancelled && !item.isCompleted&&   <button  className="sm:min-w-48 py-2 border-red-700 rounded font-extrabold text-red-500 mt-20"> Appointemnt Cancelled  </button>}
-            {item.isCompleted && <button className="sm:min-w-48 py-2 border border-green-500 text-green-600">Completed</button>}
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };
 
-export default MyAppointemnt;
+export default MyAppointments;
